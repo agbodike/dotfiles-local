@@ -1,0 +1,24 @@
+export PATH="/usr/local/opt/node@10/bin:$PATH"
+export PATH="$HOME/.bin:$PATH"
+export AWS_SDK_LOAD_CONFIG=1
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# tabtab source for serverless package
+# uninstall by removing these lines or running `tabtab uninstall serverless`
+[[ -f /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/serverless.zsh ]] && . /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/serverless.zsh
+# tabtab source for sls package
+# uninstall by removing these lines or running `tabtab uninstall sls`
+[[ -f /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/sls.zsh ]] && . /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/sls.zsh
+# tabtab source for slss package
+# uninstall by removing these lines or running `tabtab uninstall slss`
+[[ -f /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/slss.zsh ]] && . /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/slss.zsh
+
+export AWS_REGION="us-west-2"
+alias startapi='ngrok http -subdomain=afamagbodike-local-api --host-header=rewrite 8080'
+alias startclient='ngrok http --subdomain afamagbodike-local-client --host-header=rewrite 4000'
+alias runapi='cd /Users/afam/workspace/ns8/ns8-protect-api/; yarn install && yarn build && yarn start:dev:watch'
+alias runclient='cd /Users/afam/workspace/ns8/ns8-protect-client/; yarn local-full-build'

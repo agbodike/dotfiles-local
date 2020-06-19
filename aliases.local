@@ -1,0 +1,11 @@
+# Bundler
+alias be="bundle exec"
+
+# Git
+alias gl="git l -5"
+alias glp="git log -p"
+alias gpr="git pull --rebase"
+alias gst="git status"
+alias gap="git add -p"
+alias gam="git commit --amend"
+

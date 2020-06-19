@@ -1,0 +1,57 @@
+#!/bin/sh
+
+if [ ! -d "$HOME/workspace/" ]; then
+  mkdir "$HOME/workspace"
+fi
+
+brew bundle --file=- <<EOF
+#brew "Caskroom/cask/dockertoolbox"
+brew "Caskroom/cask/ngrok"
+brew "awscli"
+brew "convox"
+brew "fzf"
+brew "go"
+brew "neovim"
+brew "watch"
+EOF
+
+fancy_echo "Cleaning up old Homebrew formulae ..."
+brew cleanup
+
+if [ -r "$HOME/.rcrc" ]; then
+  fancy_echo "Updating dotfiles ..."
+  rcup
+fi
+
+#######################
+# Old Stuff
+#######################
+
+#if ! rbenv versions | grep -Fq "$pomello_ruby_version"; then
+#  fancy_echo "Installing Pomello Ruby Version %s ..." "$pomello_ruby_version"
+#  rbenv install -s "$pomello_ruby_version"
+#fi
+
+#brew cask install 'google-chrome'
+##brew cask install iterm2
+#brew cask install java
+#brew cask install karabiner
+#brew cask install 'shiftit'
+##brew_cask_install virtualbox
+##brew_cask_install vagrant
+##brew_cask_install vagrant-manager
+#brew cask install 'wkhtmltopdf'
+##
+##brew_tap 'caskroom/fonts'
+##
+##brew_cask_install font-anonymous-pro-for-powerline
+##brew_cask_install font-dejavu-sans-mono-for-powerline
+##brew_cask_install font-droid-sans-mono-for-powerline
+##brew_cask_install font-fira-mono-for-powerline
+##brew_cask_install font-inconsolata-dz-for-powerline
+##brew_cask_install font-inconsolata-for-powerline
+##brew_cask_install font-inconsolata-g-for-powerline
+##brew_cask_install font-liberation-mono-for-powerline
+##brew_cask_install font-meslo-lg-for-powerline
+##brew_cask_install font-sauce-code-powerline
+##brew_cask_install font-source-code-pro-for-powerline

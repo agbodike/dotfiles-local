@@ -1,0 +1,7 @@
+[alias]
+  l = log -5 --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
+[user]
+  name = Afam Agbodike
+  email = afam@lixy.tech
+[includeIf "gitdir:~/workspace/ns8/"]
+  path = ~/workspace/ns8/.gitconfig_include
