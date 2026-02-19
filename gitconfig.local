@@ -5,3 +5,11 @@
   email = afam@lixy.tech
 [includeIf "gitdir:~/workspace/ns8/"]
   path = ~/workspace/ns8/.gitconfig_include
+[difftool]
+  prompt = true
+[diff]
+  tool = nvimdiff
+[merge]
+  tool = nvimdiff
+[difftool "nvimdiff"]
+  cmd = 'nvim -d "$LOCAL" "$REMOTE"'

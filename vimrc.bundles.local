@@ -1,2 +1,3 @@
 Plug 'leafgarland/typescript-vim'
 Plug 'ianks/vim-tsx'
+Plug 'chrisbra/csv.vim'

@@ -9,3 +9,10 @@ alias gst="git status"
 alias gap="git add -p"
 alias gam="git commit --amend"
 
+# Nvim
+# Normal usage
+alias n="nvim $1"
+# For muscle memory
+alias vi=nvim
+alias vim=nvim
+alias vimdiff="nvim -d"
