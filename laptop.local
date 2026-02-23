@@ -11,7 +11,6 @@ brew "git-absorb"
 brew "go"
 brew "grpcurl"
 brew "neovim"
-brew "nvm"
 brew "postgis" # sitewire
 brew "postgresql@18", restart_service: :changed
 brew "watch"
@@ -27,6 +26,22 @@ cask "codex"
 cask "visual-studio-code"
 cask "zoom"
 EOF
+
+# Keep PostgreSQL pinned to 18 even if upstream laptop installs @14.
+if brew list --formula | grep -Fxq "postgresql@14"; then
+  brew services stop postgresql@14 || true
+  brew uninstall postgresql@14 || true
+fi
+
+brew link --overwrite postgresql@18 || true
+brew services start postgresql@18 || true
+
+# Use Corepack to manage Yarn in a Node-version-aware way.
+if command -v corepack >/dev/null 2>&1; then
+  fancy_echo "Enabling Corepack and activating Yarn stable ..."
+  corepack enable || true
+  corepack prepare yarn@stable --activate || true
+fi
 
 default_docker_machine() {
   docker-machine ls | grep -Fq "default"

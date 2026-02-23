@@ -1,27 +1,13 @@
-export PATH="/usr/local/opt/node@10/bin:$PATH"
-export PATH="$HOME/.bin:$PATH"
 export AWS_SDK_LOAD_CONFIG=1
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-
-# tabtab source for serverless package
-# uninstall by removing these lines or running `tabtab uninstall serverless`
-[[ -f /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/serverless.zsh ]] && . /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/serverless.zsh
-# tabtab source for sls package
-# uninstall by removing these lines or running `tabtab uninstall sls`
-[[ -f /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/sls.zsh ]] && . /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/sls.zsh
-# tabtab source for slss package
-# uninstall by removing these lines or running `tabtab uninstall slss`
-[[ -f /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/slss.zsh ]] && . /Users/afam/workspace/ns8/ns8-bigcommerce-switchboard/node_modules/tabtab/.completions/slss.zsh
 
 export EDITOR="nvim"
 export VISUAL="nvim"
 
 export AWS_REGION="us-west-2"
 
+if command -v ngrok >/dev/null 2>&1; then
+  eval "$(ngrok completion)"
+fi
+
 # Load local secrets (not tracked in git)
 [ -f "$HOME/.zshrc.secrets" ] && source "$HOME/.zshrc.secrets"
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

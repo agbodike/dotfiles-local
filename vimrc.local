@@ -1,2 +1,8 @@
 set textwidth=80
 set hls
+
+if has('nvim')
+  set clipboard=unnamedplus
+  set inccommand=split
+  set undofile
+endif
