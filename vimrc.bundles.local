@@ -10,6 +10,7 @@ if has('nvim')
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-neotest/nvim-nio'
   Plug 'nvim-telescope/telescope.nvim'
+  Plug 'sindrets/diffview.nvim'
   Plug 'nvim-neotest/neotest'
   Plug 'nvim-neotest/neotest-jest'
   Plug 'olimorris/neotest-rspec'

@@ -14,6 +14,7 @@ lua << EOF
 local ok_conform, conform = pcall(require, "conform")
 local ok_lint, lint = pcall(require, "lint")
 local ok_comment, comment = pcall(require, "Comment")
+local ok_diffview, diffview = pcall(require, "diffview")
 local ok_neotest, neotest = pcall(require, "neotest")
 local ok_neotest_jest, neotest_jest = pcall(require, "neotest-jest")
 local ok_neotest_rspec, neotest_rspec = pcall(require, "neotest-rspec")
@@ -53,10 +54,14 @@ vim.diagnostic.config({
 vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Line diagnostics" })
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+vim.keymap.set("n", "[r", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
+vim.keymap.set("n", "]r", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
 
 local on_attach = function(_, bufnr)
   local opts = { buffer = bufnr, silent = true }
   vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+  vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+  vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
   vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
   vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
   vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
@@ -153,6 +158,17 @@ if ok_comment then
   comment.setup()
 end
 
+if ok_diffview then
+  diffview.setup()
+
+  vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<CR>", { silent = true })
+  vim.keymap.set("n", "<leader>gs", "<cmd>DiffviewOpen --cached<CR>", { silent = true })
+  vim.keymap.set("n", "<leader>gc", "<cmd>DiffviewOpen HEAD~1..HEAD<CR>", { silent = true })
+  vim.keymap.set("n", "<leader>gq", "<cmd>DiffviewClose<CR>", { silent = true })
+  vim.keymap.set("n", "<leader>gh", "<cmd>DiffviewFileHistory<CR>", { silent = true })
+  vim.keymap.set("n", "<leader>gf", "<cmd>DiffviewFileHistory %<CR>", { silent = true })
+end
+
 if ok_telescope then
   telescope.setup({
     defaults = {
@@ -178,9 +194,15 @@ end
 if ok_builtin then
   vim.keymap.set("n", "<C-p>", builtin.find_files, { silent = true })
   vim.keymap.set("n", "\\", builtin.live_grep, { silent = true })
+  vim.keymap.set("n", "<leader>ff", builtin.find_files, { silent = true })
   vim.keymap.set("n", "<leader>fb", builtin.buffers, { silent = true })
+  vim.keymap.set("n", "<leader>fs", builtin.current_buffer_fuzzy_find, { silent = true })
   vim.keymap.set("n", "<leader>fo", builtin.oldfiles, { silent = true })
   vim.keymap.set("n", "<leader>fh", builtin.help_tags, { silent = true })
+  vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { silent = true })
+  vim.keymap.set("n", "<leader>fsd", builtin.lsp_document_symbols, { silent = true })
+  vim.keymap.set("n", "<leader>fws", builtin.lsp_dynamic_workspace_symbols, { silent = true })
+  vim.keymap.set("n", "<leader>xx", builtin.diagnostics, { silent = true })
 end
 
 if ok_neotest then
