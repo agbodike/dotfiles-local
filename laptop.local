@@ -9,10 +9,14 @@ brew "awscli"
 brew "fzf"
 brew "git-absorb"
 brew "go"
+brew "gopls"
 brew "grpcurl"
+brew "lua-language-server"
 brew "neovim"
 brew "postgis" # sitewire
 brew "postgresql@18", restart_service: :changed
+brew "stylua"
+brew "tree-sitter-cli"
 brew "watch"
 brew "vips"
 cask "brave-browser"
@@ -41,6 +45,20 @@ if command -v corepack >/dev/null 2>&1; then
   fancy_echo "Enabling Corepack and activating Yarn stable ..."
   corepack enable || true
   corepack prepare yarn@stable --activate || true
+fi
+
+# Install language servers/formatters that our Neovim config expects.
+if command -v npm >/dev/null 2>&1; then
+  fancy_echo "Installing/updating Neovim JS/TS tools ..."
+  npm install --global \
+    prettier \
+    typescript \
+    typescript-language-server \
+    vscode-langservers-extracted || fancy_echo "Skipping Neovim JS/TS tool install (npm failed)."
+
+  if command -v asdf >/dev/null 2>&1; then
+    asdf reshim nodejs || true
+  fi
 fi
 
 default_docker_machine() {
@@ -78,7 +96,11 @@ if command -v nvim >/dev/null 2>&1; then
 
   fancy_echo "Updating plugins through Neovim ..."
   nvim --headless -u "$HOME"/.config/nvim/init.vim \
-    +PlugUpgrade +PlugUpdate +PlugClean! +qa || true
+    +PlugUpgrade +PlugInstall +PlugUpdate +PlugClean! +qa || true
+
+  fancy_echo "Treesitter parsers must be installed once from an interactive Neovim session."
+  fancy_echo "Run :TSInstall bash css go html javascript json lua markdown ruby tsx typescript vim yaml"
+  fancy_echo "Then run :TSUpdate after the installs complete."
 fi
 
 

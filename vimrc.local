@@ -5,4 +5,306 @@ if has('nvim')
   set clipboard=unnamedplus
   set inccommand=split
   set undofile
+
+  augroup ale
+    autocmd!
+  augroup END
+
+lua << EOF
+local ok_conform, conform = pcall(require, "conform")
+local ok_lint, lint = pcall(require, "lint")
+local ok_comment, comment = pcall(require, "Comment")
+local ok_neotest, neotest = pcall(require, "neotest")
+local ok_neotest_jest, neotest_jest = pcall(require, "neotest-jest")
+local ok_neotest_rspec, neotest_rspec = pcall(require, "neotest-rspec")
+local ok_telescope, telescope = pcall(require, "telescope")
+local ok_builtin, builtin = pcall(require, "telescope.builtin")
+local ok_treesitter, treesitter = pcall(require, "nvim-treesitter.configs")
+local augroup = vim.api.nvim_create_augroup("AfamDevTools", { clear = true })
+local has_new_lsp_api = type(vim.lsp.config) == "table" and type(vim.lsp.enable) == "function"
+local ok_lsp, lspconfig
+
+if has_new_lsp_api then
+  ok_lsp = true
+  lspconfig = nil
+else
+  ok_lsp, lspconfig = pcall(require, "lspconfig")
+end
+
+local function has_exec(bin)
+  return vim.fn.executable(bin) == 1
+end
+
+local function any_exec(bins)
+  for _, bin in ipairs(bins) do
+    if has_exec(bin) then
+      return true
+    end
+  end
+  return false
+end
+
+vim.diagnostic.config({
+  severity_sort = true,
+  virtual_text = false,
+  float = { border = "rounded" },
+})
+
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Line diagnostics" })
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+
+local on_attach = function(_, bufnr)
+  local opts = { buffer = bufnr, silent = true }
+  vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+  vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+  vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+  vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+  vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+  vim.keymap.set("n", "<leader>f", function()
+    if ok_conform then
+      conform.format({ async = true, lsp_fallback = true })
+    else
+      vim.lsp.buf.format({ async = true })
+    end
+  end, opts)
+end
+
+if ok_lsp then
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+  local servers = {
+    rubocop = {
+      executable = "rubocop",
+      config = {},
+    },
+    gopls = {
+      executable = "gopls",
+      config = {},
+    },
+    ts_ls = {
+      executable = "typescript-language-server",
+      config = {},
+    },
+    eslint = {
+      executable = "vscode-eslint-language-server",
+      config = {},
+    },
+    lua_ls = {
+      executable = "lua-language-server",
+      config = {
+        settings = {
+          Lua = {
+            diagnostics = { globals = { "vim" } },
+          },
+        },
+      },
+    },
+  }
+
+  for server, server_data in pairs(servers) do
+    local config = vim.tbl_deep_extend("force", server_data.config, {
+      capabilities = capabilities,
+      on_attach = on_attach,
+    })
+
+    if vim.fn.executable(server_data.executable) == 1 then
+      if has_new_lsp_api then
+        vim.lsp.config(server, config)
+        vim.lsp.enable(server)
+      else
+        pcall(lspconfig[server].setup, config)
+      end
+    end
+  end
+end
+
+if ok_treesitter then
+  treesitter.setup({
+    ensure_installed = {
+      "bash",
+      "css",
+      "go",
+      "html",
+      "javascript",
+      "json",
+      "lua",
+      "markdown",
+      "ruby",
+      "tsx",
+      "typescript",
+      "vim",
+      "yaml",
+    },
+    highlight = { enable = true },
+    indent = { enable = true },
+  })
+end
+
+if ok_comment then
+  comment.setup()
+end
+
+if ok_telescope then
+  telescope.setup({
+    defaults = {
+      layout_strategy = "horizontal",
+      sorting_strategy = "ascending",
+      layout_config = {
+        prompt_position = "top",
+      },
+    },
+    pickers = {
+      find_files = {
+        hidden = true,
+      },
+      live_grep = {
+        additional_args = function()
+          return { "--hidden" }
+        end,
+      },
+    },
+  })
+end
+
+if ok_builtin then
+  vim.keymap.set("n", "<C-p>", builtin.find_files, { silent = true })
+  vim.keymap.set("n", "\\", builtin.live_grep, { silent = true })
+  vim.keymap.set("n", "<leader>fb", builtin.buffers, { silent = true })
+  vim.keymap.set("n", "<leader>fo", builtin.oldfiles, { silent = true })
+  vim.keymap.set("n", "<leader>fh", builtin.help_tags, { silent = true })
+end
+
+if ok_neotest then
+  local adapters = {}
+
+  if ok_neotest_rspec then
+    table.insert(adapters, neotest_rspec({
+      rspec_cmd = function()
+        return { "bundle", "exec", "rspec" }
+      end,
+    }))
+  end
+
+  if ok_neotest_jest then
+    table.insert(adapters, neotest_jest({
+      jestCommand = "yarn test --",
+      cwd = function()
+        return vim.fn.getcwd()
+      end,
+    }))
+  end
+
+  neotest.setup({
+    adapters = adapters,
+  })
+
+  vim.keymap.set("n", "<leader>t", function()
+    neotest.run.run(vim.fn.expand("%"))
+  end, { silent = true })
+
+  vim.keymap.set("n", "<leader>s", function()
+    neotest.run.run()
+  end, { silent = true })
+
+  vim.keymap.set("n", "<leader>l", function()
+    neotest.run.run_last()
+  end, { silent = true })
+
+  vim.keymap.set("n", "<leader>a", function()
+    neotest.run.run(vim.loop.cwd())
+  end, { silent = true })
+
+  vim.keymap.set("n", "<leader>gt", function()
+    neotest.output.open({ enter = true, auto_close = true })
+  end, { silent = true })
+end
+
+if ok_conform then
+  local formatters_by_ft = {}
+
+  if any_exec({ "prettier", "prettierd" }) then
+    formatters_by_ft.javascript = { "prettier", "prettierd", stop_after_first = true }
+    formatters_by_ft.javascriptreact = { "prettier", "prettierd", stop_after_first = true }
+    formatters_by_ft.typescript = { "prettier", "prettierd", stop_after_first = true }
+    formatters_by_ft.typescriptreact = { "prettier", "prettierd", stop_after_first = true }
+    formatters_by_ft.json = { "prettier", "prettierd", stop_after_first = true }
+    formatters_by_ft.yaml = { "prettier", "prettierd", stop_after_first = true }
+    formatters_by_ft.markdown = { "prettier", "prettierd", stop_after_first = true }
+  end
+
+  if has_exec("rubocop") then
+    formatters_by_ft.ruby = { "rubocop" }
+  end
+
+  if has_exec("gofmt") then
+    formatters_by_ft.go = { "gofmt" }
+  end
+
+  if has_exec("stylua") then
+    formatters_by_ft.lua = { "stylua" }
+  end
+
+  conform.setup({
+    formatters_by_ft = formatters_by_ft,
+    format_on_save = {
+      timeout_ms = 1000,
+      lsp_fallback = true,
+    },
+  })
+end
+
+if ok_lint then
+  local linters_by_ft = {}
+
+  if has_exec("eslint") then
+    linters_by_ft.javascript = { "eslint" }
+    linters_by_ft.javascriptreact = { "eslint" }
+    linters_by_ft.typescript = { "eslint" }
+    linters_by_ft.typescriptreact = { "eslint" }
+  end
+
+  if has_exec("rubocop") then
+    linters_by_ft.ruby = { "rubocop" }
+  end
+
+  lint.linters_by_ft = linters_by_ft
+
+  vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+    group = augroup,
+    callback = function()
+      if next(lint.linters_by_ft) ~= nil then
+        lint.try_lint()
+      end
+    end,
+  })
+end
+
+vim.api.nvim_create_user_command("DevHealth", function()
+  local bins = {
+    "rubocop",
+    "gofmt",
+    "gopls",
+    "prettier",
+    "typescript-language-server",
+    "vscode-eslint-language-server",
+    "lua-language-server",
+    "stylua",
+  }
+
+  local lines = {
+    "Neovim dev tooling",
+    "lspconfig: " .. tostring(ok_lsp),
+    "conform: " .. tostring(ok_conform),
+    "nvim-lint: " .. tostring(ok_lint),
+    "",
+  }
+
+  for _, bin in ipairs(bins) do
+    table.insert(lines, string.format("%-30s %s", bin, has_exec(bin) and "yes" or "no"))
+  end
+
+  vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "DevHealth" })
+end, {})
+EOF
 endif
