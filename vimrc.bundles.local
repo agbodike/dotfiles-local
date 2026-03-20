@@ -3,6 +3,9 @@ if has('nvim')
   UnPlug 'tComment'
   UnPlug 'fzf.vim'
   UnPlug 'vim-test'
+  UnPlug 'vim-elixir'
+  UnPlug 'vim-go'
+  UnPlug 'vim-slim'
   Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-neotest/nvim-nio'

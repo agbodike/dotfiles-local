@@ -74,10 +74,6 @@ if ok_lsp then
   local capabilities = vim.lsp.protocol.make_client_capabilities()
 
   local servers = {
-    rubocop = {
-      executable = "rubocop",
-      config = {},
-    },
     gopls = {
       executable = "gopls",
       config = {},
@@ -101,6 +97,18 @@ if ok_lsp then
       },
     },
   }
+
+  if has_exec("ruby-lsp") then
+    servers.ruby_lsp = {
+      executable = "ruby-lsp",
+      config = {},
+    }
+  elseif has_exec("rubocop") then
+    servers.rubocop = {
+      executable = "rubocop",
+      config = {},
+    }
+  end
 
   for server, server_data in pairs(servers) do
     local config = vim.tbl_deep_extend("force", server_data.config, {
@@ -282,6 +290,7 @@ end
 
 vim.api.nvim_create_user_command("DevHealth", function()
   local bins = {
+    "ruby-lsp",
     "rubocop",
     "gofmt",
     "gopls",
