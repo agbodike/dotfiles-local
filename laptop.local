@@ -67,6 +67,20 @@ if [ -r "$HOME/.rcrc" ]; then
   rcup
 fi
 
+# Keep vim-plug and plugins current through Neovim, since Neovim is the editor
+# we actually use day-to-day even though the shared config still lives in ~/.vim.
+if command -v nvim >/dev/null 2>&1; then
+  if [ ! -e "$HOME"/.vim/autoload/plug.vim ]; then
+    fancy_echo "Installing vim-plug for Neovim-compatible shared config ..."
+    curl -fLo "$HOME"/.vim/autoload/plug.vim --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim || true
+  fi
+
+  fancy_echo "Updating plugins through Neovim ..."
+  nvim --headless -u "$HOME"/.config/nvim/init.vim \
+    +PlugUpgrade +PlugUpdate +PlugClean! +qa || true
+fi
+
 
 
 #######################
