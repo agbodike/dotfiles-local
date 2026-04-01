@@ -6,6 +6,7 @@ fi
 
 brew bundle --file=- <<EOF
 brew "awscli"
+brew "docker-buildx"
 brew "fzf"
 brew "git-absorb"
 brew "go"
@@ -19,6 +20,8 @@ brew "stylua"
 brew "tree-sitter-cli"
 brew "watch"
 brew "vips"
+brew "colima"
+brew "opentofu"
 cask "brave-browser"
 cask "firefox"
 cask "google-chrome"
@@ -26,6 +29,7 @@ cask "ngrok"
 cask "codex"
 cask "visual-studio-code"
 cask "zoom"
+cask "session-manager-plugin"
 EOF
 
 # Keep PostgreSQL pinned to 18 even if upstream laptop installs @14.
