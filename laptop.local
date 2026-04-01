@@ -20,9 +20,6 @@ brew "tree-sitter-cli"
 brew "watch"
 brew "vips"
 cask "brave-browser"
-cask "virtualbox"
-#cask "docker"
-brew "docker-machine"
 cask "firefox"
 cask "google-chrome"
 cask "ngrok"
@@ -59,22 +56,6 @@ if command -v npm >/dev/null 2>&1; then
   if command -v asdf >/dev/null 2>&1; then
     asdf reshim nodejs || true
   fi
-fi
-
-default_docker_machine() {
-  docker-machine ls | grep -Fq "default"
-}
-
-if ! default_docker_machine; then
-  docker-machine create --driver virtualbox default
-fi
-
-default_docker_machine_running() {
-  default_docker_machine | grep -Fq "Running"
-}
-
-if ! default_docker_machine_running; then
-  docker-machine start default
 fi
 
 fancy_echo "Cleaning up old Homebrew formulae ..."
