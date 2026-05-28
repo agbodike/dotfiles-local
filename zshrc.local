@@ -11,3 +11,5 @@ fi
 
 # Load local secrets (not tracked in git)
 [ -f "$HOME/.zshrc.secrets" ] && source "$HOME/.zshrc.secrets"
+
+export PATH="$HOME/.bin:$PATH"
